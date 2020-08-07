@@ -1,0 +1,268 @@
+package skyAbove;
+
+import java.awt.Canvas;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import org.dyn4j.dynamics.World;
+import com.formdev.flatlaf.FlatLightLaf;
+
+public abstract class SimulationFrame {
+	public static final Color BleuCiel = new Color(45, 142, 247);
+
+	/** The conversion factor from nano to base */
+	public static final double NANO_TO_BASE = 1.0e9;
+
+	static BufferedImage backgroundImg;
+
+	public static Canvas landscapeCanvas = new Canvas();
+	public static int landscapeWidth;
+	public static int landscapeHeight;
+    public static JPanel PanelsContainerGame = new JPanel();
+	public static JPanel landscapePanel = new JPanel();
+	
+	public static String messageLabel1;
+	public static String messageLabel2;
+	public static int messageLabel3;
+	public static int messageLabel4;
+
+	/** The dynamics engine */
+	protected final World world;
+
+	/** The pixels per meter scale factor */
+	protected final double scale;
+	
+	private static boolean stopped;
+	private static boolean paused;
+ 	
+	/** The time stamp for the last iteration */
+	private long last;
+
+	public SimulationFrame(String name, double scale) throws IOException {
+		this.scale = scale; // set the scale
+		this.world = new World(); // create the world
+		
+		landscapeCanvas.setSize(1280, 768);
+		landscapePanel.add(landscapeCanvas);
+		PanelsContainerGame.setLayout(new CardLayout());
+	    PanelsContainerGame.add(landscapePanel);
+	    menu.frame.add(PanelsContainerGame);
+
+		this.initializeWorld(); // setup the world
+	}
+	
+	// Creates game objects and adds them to the world.
+	protected abstract void initializeWorld() throws IOException;
+	
+	/**
+	 * Start active rendering the simulation.
+	 * This should be called after the JFrame has been shown.
+	 */
+	private void start() {
+		// initialize the last update time
+		this.last = System.nanoTime();
+		// don't allow AWT to paint the canvas since we are
+		landscapeCanvas.setIgnoreRepaint(true);
+		// enable double buffering (the JFrame has to be
+		// visible before this can be done)
+		landscapeCanvas.createBufferStrategy(2);
+		// run a separate thread to do active rendering
+		// because we don't want to do it on the EDT
+		Thread thread = new Thread() {
+			public void run() {
+				// perform an infinite loop stopped
+				// render as fast as possible
+				while (!isStopped()) {
+					try { gameLoop(); } catch (IOException e1) {e1.printStackTrace();}
+					// you could add a Thread.yield(); or
+					// Thread.sleep(long) here to give the
+					// CPU some breathing room
+					try {
+						Thread.sleep(5);
+					} catch (InterruptedException e) {}
+				}
+			}
+		};
+		// set the game loop thread to a daemon thread so that
+		// it cannot stop the JVM from exiting
+		thread.setDaemon(true);
+		// start the game loop
+		thread.start();
+	}
+	
+	/**
+	 * The method calling the necessary methods to update
+	 * the game, graphics, and poll for input.
+	 * @throws IOException 
+	 */
+	private void gameLoop() throws IOException {
+		// get the graphics object to render to
+		Graphics2D g = (Graphics2D) landscapeCanvas.getBufferStrategy().getDrawGraphics();
+		
+		// by default, set (0, 0) to be the center of the screen with the positive x axis
+		// pointing right and the positive y axis pointing up
+		this.transform(g);
+
+		// reset the view
+		this.clear(g);
+
+        long time = System.nanoTime(); // get the current time
+        // get the elapsed time from the last iteration
+        long diff = time - this.last;
+        this.last = time; // set the last time
+    	// convert from nanoseconds to seconds
+    	double elapsedTime = (double)diff / NANO_TO_BASE;
+
+		// render anything about the simulation (will render the World objects)
+		this.render(g, elapsedTime);
+
+		if (!paused) { // update the World
+	        this.update(g, elapsedTime);
+		}
+
+		g.dispose(); // dispose of the graphics object
+
+		// blit/flip the buffer
+		BufferStrategy strategy = landscapeCanvas.getBufferStrategy();
+		if (!strategy.contentsLost()) {
+			strategy.show();
+		}
+
+		// Sync the display on some systems.
+        // (on Linux, this fixes event queue problems)
+        Toolkit.getDefaultToolkit().sync();
+	}
+
+	/**
+	 * Performs any transformations to the graphics.
+	 * By default, this method puts the origin (0,0) in the center of the window
+	 * and points the positive y-axis pointing up.
+	 * @param g the graphics object to render to
+	 */
+	protected void transform(Graphics2D g) {
+	}
+	
+	/**
+	 * Clears the previous frame.
+	 * @param g the graphics object to render to
+	 * @throws IOException 
+	 */
+	protected void clear(Graphics2D g) throws IOException {
+		Graphics2D g2 = (Graphics2D) g;
+
+		// lets draw over everything with background
+		g2.drawImage(backgroundImg,  // image generee de la zone
+				0, 0,       // dx1, dy1 - x,y destination 1st corner
+				1280, 768,   // dx2, dy2 - x,y destination 2nd corner
+				0, 0, // sx1, sy1 - x,y source 1st corner
+				1280, 768, // sx2, sy2 - x,y source 2nd corner
+				BleuCiel, // bgcolor
+				null);     // observer - object to get image modifications 
+
+		g.drawString("tableauX = "+messageLabel1, 100, 100);
+		g.drawString("tableauY = "+messageLabel2, 100, 120);
+		g.drawString("Zone = "+messageLabel3, 100, 140);
+		g.drawString("Size = "+messageLabel4, 100, 160);
+	}
+	
+	public static void updateBackground() throws IOException {
+		String background = "usr/background/currentTableau.png";
+		backgroundImg = ImageIO.read(new File(background));
+
+	    try { backgroundImg = ImageIO.read(new File(background));} catch (IOException e) { e.printStackTrace(); }
+	}
+
+	/**
+	 * Renders the example.
+	 * @param g the graphics object to render to
+	 * @param elapsedTime the elapsed time from the last update
+	 */
+	protected void render(Graphics2D g, double elapsedTime) {
+		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		// draw all the objects in the world
+		for (int i = 0; i < this.world.getBodyCount(); i++) {
+			// get the object
+			SimulationBody body = (SimulationBody) this.world.getBody(i);
+			this.render(g, elapsedTime, body);
+		}
+	}
+	
+	/**
+	 * Renders the body.
+	 * @param g the graphics object to render to
+	 * @param elapsedTime the elapsed time from the last update
+	 * @param body the body to render
+	 */
+	protected void render(Graphics2D g, double elapsedTime, SimulationBody body) {
+		// draw the object
+		body.render(g, this.scale);
+	}
+	
+	/**
+	 * Updates the world.
+	 * @param g the graphics object to render to
+	 * @param elapsedTime the elapsed time from the last update
+	 * @throws IOException 
+	 */
+	// update the world with the elapsed time
+	protected void update(Graphics2D g, double elapsedTime) throws IOException {
+        this.world.update(elapsedTime);
+	}
+	
+	// Stops the simulation.
+	public synchronized void stop() {
+		SimulationFrame.stopped = true;
+	}
+	
+	/**
+	 * Returns true if the simulation is stopped.
+	 * @return boolean true if stopped
+	 */
+	public boolean isStopped() {
+		return SimulationFrame.stopped;
+	}
+	
+	// Pauses the simulation
+	public synchronized void pause() {
+		SimulationFrame.paused = true;
+	}
+	
+	// Resumes the simulation
+	public synchronized void resume() {
+		SimulationFrame.paused = false;
+	}
+	
+	/**
+	 * Returns true if the simulation is paused.
+	 * @return boolean true if paused
+	 */
+	public boolean isPaused() {
+		return SimulationFrame.paused;
+	}
+	
+	// Starts the simulation.
+	public void run() {
+		// set the look and feel to the system look and feel
+		try { UIManager.setLookAndFeel( new FlatLightLaf() ); } catch (UnsupportedLookAndFeelException e) {	e.printStackTrace(); }
+		
+		// start it
+		this.start();
+	}
+	
+}
