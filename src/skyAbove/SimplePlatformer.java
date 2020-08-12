@@ -14,10 +14,10 @@ import org.dyn4j.geometry.Vector2;
 
 public class SimplePlatformer extends SimulationFrame {
 	public static int zonePlayerCurrent;
-	public static int CurrentXTableauPlayer = Integer.parseInt(LoadFile.tableauXPlayer);
-	public static int CurrentYTableauPlayer = Integer.parseInt(LoadFile.tableauYPlayer);
-	public static int SizezoneCurrent;
-	public static String currentADN;
+	static int CurrentXTableauPlayer = Integer.parseInt(LoadFile.tableauXPlayer);
+	static int CurrentYTableauPlayer = Integer.parseInt(LoadFile.tableauYPlayer);
+	static int SizezoneCurrent;
+	static String currentADN;
 
 	private AtomicBoolean leftPressed = new AtomicBoolean(false);
 	private AtomicBoolean rightPressed = new AtomicBoolean(false);
@@ -26,6 +26,10 @@ public class SimplePlatformer extends SimulationFrame {
 	private AtomicBoolean spacePressed = new AtomicBoolean(false);
 	private AtomicBoolean MPressed = new AtomicBoolean(false);
 
+	// toggle the Game menu
+	static boolean GameMenuLoaded = false;
+	GameMenu menuGame = new GameMenu();
+	
 	public SimplePlatformer() throws IOException {
 		super(LoadFile.nameWorld, 32);
 		KeyListener listener = new CustomKeyListener();
@@ -126,8 +130,22 @@ public class SimplePlatformer extends SimulationFrame {
 		SimulationFrame.messageLabel1 = String.valueOf(CurrentXTableauPlayer);		
 		SimulationFrame.messageLabel2 = String.valueOf(CurrentYTableauPlayer);
 		SimulationFrame.messageLabel3 = zonePlayerCurrent;
-		SimulationFrame.messageLabel4 = LoadFile.sizesZones[SimplePlatformer.zonePlayerCurrent];
+		SimulationFrame.messageLabel4 = SizezoneCurrent;
 
+		// afficher le menu du jeu (map, inventaire, save, etc)
+		if (this.MPressed.get()) {
+			if (GameMenuLoaded == false) {
+				this.MPressed.set(false);
+				try { menuGame.ShowGameMenu() ; } catch (Exception e2) { e2.printStackTrace(); }
+				SimulationFrame.menuFrame.toFront();
+			}
+			else {
+				this.MPressed.set(false);
+				SimulationFrame.gameFrame.toFront();
+				GameMenuLoaded = false;
+			}
+		}
+		
 		if (ObjectsWorld.bike.isInContact(ObjectsWorld.bottom)) {
 			if (this.leftPressed.get()) {
 				ObjectsWorld.bike.applyImpulse(new Vector2(-0.05, 0));
@@ -135,7 +153,13 @@ public class SimplePlatformer extends SimulationFrame {
 			if (this.rightPressed.get()) {
 				ObjectsWorld.bike.applyImpulse(new Vector2(0.05, 0));
 			}
-			if (this.downPressed.get()) {
+			if (this.downPressed.get() && CurrentYTableauPlayer>=0 && CurrentYTableauPlayer<9990) {
+				this.world.removeBody(ObjectsWorld.bike);
+				CurrentYTableauPlayer = CurrentYTableauPlayer+10;
+				createZoneBackgrounds.imageIoWrite();
+				SimulationFrame.updateBackground();
+				//ObjectsWorld.bike.translate(0,-10);
+				this.world.addBody(ObjectsWorld.bike);
 			}
 			if (this.upPressed.get()) {
 			}
@@ -143,15 +167,11 @@ public class SimplePlatformer extends SimulationFrame {
 				ObjectsWorld.bike.applyImpulse(new Vector2(0, -3));
 				this.spacePressed.set(false);
 			}
-			if (this.MPressed.get()) {
-				GameMenu.card.last(PanelsContainerGame);
-				this.MPressed.set(false);
-			}
 		}
 
 		if (ObjectsWorld.bike.isInContact(ObjectsWorld.left)) {
 			this.world.removeBody(ObjectsWorld.bike);
-
+			
 			if (CurrentXTableauPlayer == 0) {
 				zonePlayerCurrent = zonePlayerCurrent-1;
 				if (zonePlayerCurrent == 0) {
@@ -164,6 +184,7 @@ public class SimplePlatformer extends SimulationFrame {
 
 				ARNengine.induceARN(currentADN);
 				createZoneBackgrounds.imageIoWrite();
+				DrawMapZone.imageIoWrite();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(35,0);
 				this.world.addBody(ObjectsWorld.bike);
@@ -182,7 +203,7 @@ public class SimplePlatformer extends SimulationFrame {
 
 			if (CurrentXTableauPlayer == SizezoneCurrent) {
 				zonePlayerCurrent = zonePlayerCurrent+1;
-				if (zonePlayerCurrent == 3999) {
+				if (zonePlayerCurrent == 4000) {
 					zonePlayerCurrent = 0;
 				}
 				currentADN = LoadFile.adnZones[zonePlayerCurrent];
@@ -190,6 +211,7 @@ public class SimplePlatformer extends SimulationFrame {
 				CurrentXTableauPlayer = 0;
 				ARNengine.induceARN(currentADN);
 				createZoneBackgrounds.imageIoWrite();
+				DrawMapZone.imageIoWrite();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(-35,0);
 				this.world.addBody(ObjectsWorld.bike);

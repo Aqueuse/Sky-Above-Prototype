@@ -28,6 +28,7 @@ public class ARNengine {
 		String parseARN = LoadFile.adnZones[LoadFile.zonePlayer];
 		Random random = new Random();
 
+		// creation de l'ARN à partir de l'ADN
 		while (parseARN.length() < 10000) {
 			for (int i = 0; i<parseARN.length(); i++) {
 				subARN = parseARN.substring(i,i+1);
@@ -68,7 +69,6 @@ public class ARNengine {
 
 		ArrayList<Double> reliefsArray = new ArrayList<Double>();
 
-		reliefsArray.add(0.0);
 		for (int p=0; p<reliefsNumber; p++) {
 			XcoordinatesStr = parseARN.substring(p*4,(p*4)+4);
 			Xcoordinates = Integer.parseInt(XcoordinatesStr);
@@ -79,26 +79,35 @@ public class ARNengine {
 				reliefsArray.add(tempXY);
 			}
 		}
-		reliefsArray.add(0.0);
 
 		reliefsArray.sort(Comparator.naturalOrder());
 		LinkedHashSet<Double> hashSet = new LinkedHashSet<Double>(reliefsArray);
 		ArrayList<Double> reliefsFinal = new ArrayList<Double>(hashSet);
+
+		// on configure la zone de façon a commencer et finir
+		// au niveau de la mer (Y=0)
+		reliefsFinal.set(0, 0.0);
+		
+		String endStr = String.valueOf(sizeZone-1);
+		String TempEnd = endStr.concat(".0");
+		double endZone = Double.valueOf(TempEnd);
+		reliefsFinal.add(endZone);
 		
 		double reliefsDb;
 		String tempStr;
 		String[] tempDb;
 		int Xcurrent;
 		int Ycurrent;
-		
+
 		int lastX = 0;
 		int lastY = 0;
-		
+
 		int deltaHauteur;
 		int deltaSize;
 		int trancheHauteur;
+		int invTrancheHauteur;
 		int rapportDelta = 0;
-		
+
 		// pour chaque relief, pour chaque X, pour chaque Y
 		currentMatrice = new int[sizeZone+10][9999];
 		reliefsMap = new int[reliefsFinal.size()][2];
@@ -114,31 +123,31 @@ public class ARNengine {
 			//basiques, style creation de map, placement, etc
 			reliefsMap[s][0] = Xcurrent;
 			reliefsMap[s][1] = Ycurrent;
-
+			
 			deltaSize = Math.abs(Xcurrent-lastX);
 			deltaHauteur = Math.abs(Ycurrent-lastY);
-			rapportDelta = deltaHauteur/deltaSize;
-			
-			if (Ycurrent < lastY) {  /* down */ 
-				for (int l=0; l<deltaSize; l++) {
-					trancheHauteur = Math.abs(deltaSize-(rapportDelta*l));
-					for (int i=9998; i>Math.abs(9999-trancheHauteur); i--) {
-						currentMatrice[lastX+l][i]=128;
-					}
+			rapportDelta = Math.abs(deltaHauteur/deltaSize);
+
+			for (int l =0; l<deltaSize; l++) {
+				if (Ycurrent < lastY) {  /* down */ 
+					trancheHauteur = Math.abs(lastY-rapportDelta);
+					invTrancheHauteur = 9999 - trancheHauteur;
 				}
-			}
-			else { /* up */ 
-				for (int l=0; l<deltaSize; l++) {
-					trancheHauteur = Math.abs(rapportDelta*l);
-					for (int i=9998; i>Math.abs(9999-trancheHauteur); i--) {
-						currentMatrice[lastX+l][i]=128;
-					}
+				else { // up
+					trancheHauteur = Math.abs(lastY+rapportDelta);
+					invTrancheHauteur = 9999 - trancheHauteur;
 				}
+				
+				for (int i=invTrancheHauteur; i<9999; i++) {
+					currentMatrice[lastX+l][i]=128;
+				}
+				lastY = trancheHauteur;
 			}
 			lastX = Xcurrent;
 			lastY = Ycurrent;
 		}
-		
+
 		DrawMapZone.imageIoWrite();
+		System.out.println("ARN reloaded");
 	}
 }

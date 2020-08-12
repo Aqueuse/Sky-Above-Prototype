@@ -1,39 +1,49 @@
 package skyAbove;
 
+import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
 import org.dyn4j.dynamics.World;
 import com.formdev.flatlaf.FlatLightLaf;
 
 public abstract class SimulationFrame {
-	public static final Color BleuCiel = new Color(45, 142, 247);
+	public static final Color BleuCiel = new Color(193, 229, 247);
 
 	/** The conversion factor from nano to base */
 	public static final double NANO_TO_BASE = 1.0e9;
 
 	static BufferedImage backgroundImg;
 
-	public static Canvas landscapeCanvas = new Canvas();
-	public static int landscapeWidth;
-	public static int landscapeHeight;
+	// Création du bureau et de la fenetre interne du menu
+	public static JDesktopPane desktop = new JDesktopPane();
+	public static JInternalFrame menuFrame = new JInternalFrame("Menu");
+	public static JInternalFrame gameFrame = new JInternalFrame();
+
     public static JPanel PanelsContainerGame = new JPanel();
+    public static JPanel gamePanel = new JPanel();
 	public static JPanel landscapePanel = new JPanel();
+	public static Canvas landscapeCanvas = new Canvas();
+	public static CardLayout CardGame = new CardLayout();
+	public static GridBagLayout gridGame = new GridBagLayout();
 	
 	public static String messageLabel1;
 	public static String messageLabel2;
@@ -55,17 +65,43 @@ public abstract class SimulationFrame {
 	public SimulationFrame(String name, double scale) throws IOException {
 		this.scale = scale; // set the scale
 		this.world = new World(); // create the world
-		
-		landscapeCanvas.setSize(1280, 768);
-		landscapePanel.add(landscapeCanvas);
-		PanelsContainerGame.setLayout(new CardLayout());
-	    PanelsContainerGame.add(landscapePanel);
-	    menu.frame.add(PanelsContainerGame);
 
+		menu.PanelsContainer.setVisible(false);
+
+		gameFrame.setSize(1280, 768);
+		gameFrame.setVisible(true);
+		gameFrame.setBorder(null);
+		menuFrame.setSize(682, 550);
+		menuFrame.setVisible(true);
+		menuFrame.setLocation(new Point(400, 100));
+		menuFrame.setBorder(null);
+		menuFrame.setBackground(BleuCiel);
+		
+	    PanelsContainerGame.setLayout(CardGame);
+		PanelsContainerGame.setBackground(BleuCiel);
+	    landscapePanel.setLayout(gridGame);
+		landscapeCanvas.setSize(1280, 768);
+		
+		// la internalFrame du jeu
+		landscapePanel.add(landscapeCanvas);
+		gameFrame.add(gamePanel);
+		gamePanel.add(landscapePanel);
+		
+		// la internalFrame du menu
+		menuFrame.add(PanelsContainerGame);
+		desktop.add(menuFrame);
+		desktop.add(gameFrame);
+		menu.frame.add(desktop);
+				
+	    Robot robot = null;
+		try {robot = new Robot();} catch (AWTException e) {e.printStackTrace();}
+	    robot.mousePress(InputEvent.BUTTON1_MASK);
+	    robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		
 		this.initializeWorld(); // setup the world
 	}
 	
-	// Creates game objects and adds them to the world.
+	// Creates fixed game objects and adds them to the world.
 	protected abstract void initializeWorld() throws IOException;
 	
 	/**

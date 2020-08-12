@@ -107,7 +107,7 @@ public class LoadFile  implements ActionListener {
 			    
 			    BasicFileAttributes attr = Files.readAttributes(cheminPlayerPath, BasicFileAttributes.class);
 			    FileTime fileTime = attr.creationTime();
-				WorldsListing[i] = nameWorlds[i]+"\r créé le "+fileTime.toString();
+				WorldsListing[i] = nameWorlds[i]+",\r créé le "+fileTime.toString().substring(0, 10);
 			} catch (IOException ex) { }
 		}
 
@@ -177,7 +177,7 @@ public class LoadFile  implements ActionListener {
 		// 0000(X)0000(Y)
 		tableauXPlayer = CSVplayer[1][1].substring(0, 4);
 		tableauYPlayer = CSVplayer[1][1].substring(4, 8);
-		
+
 		DrawMapMonde.imageIoWrite(selectedMap);
 		SimplePlatformer.CurrentXTableauPlayer = Integer.parseInt(LoadFile.tableauXPlayer);
 		ARNengine.induceARN(LoadFile.adnZones[zonePlayer]);

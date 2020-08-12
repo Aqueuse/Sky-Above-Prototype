@@ -1,5 +1,6 @@
 package skyAbove;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -12,11 +13,10 @@ import javax.imageio.ImageIO;
 
 // draw and save the current zone map when the zone is loaded
 
-public class DrawMapZone {	
-	public static void imageIoWrite() throws IOException {
-		Color marronClair = new Color(232,212,152);
-		Color marronFonce = new Color(219,176,101);
+public class DrawMapZone {
+	public static Color bleuArdoise = new Color(79,100,133);
 
+	public static void imageIoWrite() throws IOException {
 		int ImageWidth = ARNengine.sizeZone/10;
 		int ImageHeight = 999;
 
@@ -24,20 +24,27 @@ public class DrawMapZone {
 		Graphics2D g2 = image.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		// remplir le fond avec du marron clair
-		g2.setColor(marronClair);
+		// remplir le fond avec du bleu ciel
+		g2.setColor(SimulationFrame.BleuCiel);
 		g2.fillRect(0, 0, ImageWidth, ImageHeight);
-
-		int[] Xpoints = new int[ARNengine.reliefsMap.length];
-		int[] Ypoints = new int[ARNengine.reliefsMap.length];
-
-		for (int w=0; w<ARNengine.reliefsMap.length; w++) {
-			Xpoints[w] = ARNengine.reliefsMap[w][0]/10;
-			Ypoints[w] = ARNengine.reliefsMap[w][1]/10;
-		}
 		
-		g2.setColor(marronFonce);
-		g2.fillPolygon(Xpoints, Ypoints, ARNengine.reliefsMap.length);
+		int lastX = 0;
+		int lastY = 0;
+		int currentX = 0;
+		int currentY = 0;
+
+		g2.setStroke(new BasicStroke(7));
+		g2.setColor(bleuArdoise);
+		for (int w=1; w<ARNengine.reliefsMap.length; w++) {
+			lastX = ARNengine.reliefsMap[w-1][0]/10;
+			lastY = ARNengine.reliefsMap[w-1][1]/10;
+			currentX = ARNengine.reliefsMap[w][0]/10;
+			currentY = ARNengine.reliefsMap[w][1]/10;
+
+			g2.drawLine(lastX, lastY, currentX, currentY);
+		}
+
+		g2.drawLine(0, 5, ARNengine.sizeZone/10, 5);
 
 		// Flip the image vertically
 		AffineTransform tx = AffineTransform.getScaleInstance(1, -1);

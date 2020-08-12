@@ -26,6 +26,7 @@ public class menu implements ActionListener {
 	public static CardLayout card = new CardLayout();
 	
 	public static JPanel PanelsContainer = new JPanel();
+	public static JPanel global = new JPanel();
 
 	public static JButton b1 = new JButton("Nouveau");
 	public static JButton b2 = new JButton("Charger");
@@ -51,7 +52,6 @@ public class menu implements ActionListener {
 	    // LES MENUS global/nouveau/charger/options
 	    // doivent être ajoutés en tant que cards
 		GridBagLayout gridy = new GridBagLayout();
-		JPanel global = new JPanel();
 	    global.setBackground(new Color(173, 216, 230));
 	    global.setLayout(gridy);
 
