@@ -20,7 +20,7 @@ public class createZoneBackgrounds {
 		int tempX2;
 		int tempY1;
 		int tempY2;
-		
+
 		Color Ciel = new Color(45, 142, 247);
 
 		BufferedImage image = new BufferedImage(ImageWidth, ImageHeight, BufferedImage.TYPE_INT_ARGB);

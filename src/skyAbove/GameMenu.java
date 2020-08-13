@@ -88,7 +88,7 @@ public class GameMenu implements ActionListener {
 			try {GameOptions.showOptions(); } catch (Exception e1) { e1.printStackTrace(); }
 			SimulationFrame.CardGame.last(SimulationFrame.PanelsContainerGame);
 			break;
-		case "Sauvegarde" :
+		case "Sauver" :
 			sauvegarde GameSave = new sauvegarde();
 			try {GameSave.Save(); } catch (Exception e1) { e1.printStackTrace(); }
 			SimulationFrame.CardGame.last(SimulationFrame.PanelsContainerGame);
