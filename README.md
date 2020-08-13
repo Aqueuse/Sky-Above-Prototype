@@ -2,7 +2,7 @@
 
 (Prototype ? O_o Yes, prototype it is. This is even the first version of Sky Above I dare to publish online, so very very young and imperfect program here).
 
-Sky Above is my homebrew Planet Size Vertical Platformer generator. It doesn't make a good acronym so let's call it Sky Above instead ;)
+Sky Above is my homebrew Planet Sized Vertical Platformer generator. It doesn't make a good acronym so let's call it Sky Above instead ;)
 
 ## How it works ?
 
