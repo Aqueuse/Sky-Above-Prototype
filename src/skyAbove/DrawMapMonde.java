@@ -62,7 +62,6 @@ public class DrawMapMonde {
 		g2.fillOval((ImageWidth/4)-60,(ImageHeight/4)-60,(ImageWidth/2)+120,(ImageHeight/2)+120);
 
 		try { ImageIO.write(image, "png", new File("usr/background/currentWorld.png")); } catch (IOException e) {}
-		System.out.println("carte créée");
 	}
 
 	public static void drawTrueArc(double originX, double originY,

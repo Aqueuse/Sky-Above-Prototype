@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Point;
@@ -205,14 +206,14 @@ public abstract class SimulationFrame {
 				0, 0,       // dx1, dy1 - x,y destination 1st corner
 				1280, 768,   // dx2, dy2 - x,y destination 2nd corner
 				0, 0, // sx1, sy1 - x,y source 1st corner
-				1280, 768, // sx2, sy2 - x,y source 2nd corner
+				1280+(createZoneBackgrounds.facteurZoom*5*128), // sx2
+				768+(createZoneBackgrounds.facteurZoom*5*128), // sy2 - x,y source 2nd corner
 				BleuCiel, // bgcolor
 				null);     // observer - object to get image modifications 
-
-		g.drawString("tableauX = "+messageLabel1, 100, 100);
-		g.drawString("tableauY = "+messageLabel2, 100, 120);
-		g.drawString("Zone = "+messageLabel3, 100, 140);
-		g.drawString("Size = "+messageLabel4, 100, 160);
+		
+		g2.setFont(new Font("Arial",Font.BOLD,30));
+		g2.setColor(DrawMapZone.bleuArdoise);
+		g2.drawString(Notifications.messageNotification, 1000, 40);
 	}
 	
 	public static void updateBackground() throws IOException {

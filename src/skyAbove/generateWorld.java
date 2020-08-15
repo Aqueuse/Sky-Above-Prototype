@@ -33,7 +33,6 @@ public class generateWorld {
 			}
 		}
 		chromatine = chromatine.substring(0, 799999);
-		System.out.println("chromatines created");
 
 		int rangeFirst = 0;
 		int rangeLast = 199;
@@ -102,7 +101,6 @@ public class generateWorld {
 			}
 			first = rwo;
 		}
-		System.out.println("oceans created");
 
 		// le code de génération du CSV //
 

@@ -1,6 +1,5 @@
 package skyAbove;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -8,8 +7,6 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-//import org.dyn4j.geometry.Geometry;
-import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 
 public class SimplePlatformer extends SimulationFrame {
@@ -25,6 +22,8 @@ public class SimplePlatformer extends SimulationFrame {
 	private AtomicBoolean upPressed = new AtomicBoolean(false);
 	private AtomicBoolean spacePressed = new AtomicBoolean(false);
 	private AtomicBoolean MPressed = new AtomicBoolean(false);
+	private AtomicBoolean PGDPressed = new AtomicBoolean(false);
+	private AtomicBoolean PGUPressed = new AtomicBoolean(false);
 
 	// toggle the Game menu
 	static boolean GameMenuLoaded = false;
@@ -59,6 +58,12 @@ public class SimplePlatformer extends SimulationFrame {
 				case KeyEvent.VK_M:
 					MPressed.set(true);
 					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					PGDPressed.set(true);
+					break;
+				case KeyEvent.VK_PAGE_UP:
+					PGUPressed.set(true);
+					break;
 			}
 		}
 
@@ -83,6 +88,12 @@ public class SimplePlatformer extends SimulationFrame {
 				case KeyEvent.VK_M:
 					MPressed.set(false);
 					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					PGDPressed.set(false);
+					break;
+				case KeyEvent.VK_PAGE_UP:
+					PGUPressed.set(false);
+					break;
 			}
 		}
 	}
@@ -97,7 +108,7 @@ public class SimplePlatformer extends SimulationFrame {
 		this.world.addBody(ObjectsWorld.right);
 		this.world.addBody(ObjectsWorld.top);
 		this.world.addBody(ObjectsWorld.bottom);
-//		this.world.addBody(ObjectsWorld.plateforms);
+		this.world.addBody(ObjectsWorld.plateforms);
 
 		this.world.addBody(ObjectsWorld.bike);
 		this.world.addJoint(ObjectsWorld.movePl);
@@ -105,33 +116,12 @@ public class SimplePlatformer extends SimulationFrame {
 
 		this.world.setGravity(new Vector2(0,20));
 
-		drawLandscape();
+		Platforms.reloadPlatforms();
 		SimulationFrame.updateBackground();
 	}
 
-	public void drawLandscape() {
-//		double borneLeft = 0;
-		double borneRight = 42; // LA reponse, of course
-//		double borneTop = 0;
-//		double borneBottom = 22.8;
-//		double middleX = 21;
-		double middleY = 11.4;
-
-		Rectangle plat1 = new Rectangle(5,1);
-		ObjectsWorld.plateforms.addFixture(plat1);
-		ObjectsWorld.plateforms.setColor(Color.darkGray);
-		plat1.translate(borneRight, middleY);
-
-		//		desX = currentMatrice[(currentTableauX+posX)/128][(currentTableauY+posY)/128];
-	}	
-
 	@Override
 	protected void update(Graphics2D g, double elapsedTime) throws IOException {
-		SimulationFrame.messageLabel1 = String.valueOf(CurrentXTableauPlayer);		
-		SimulationFrame.messageLabel2 = String.valueOf(CurrentYTableauPlayer);
-		SimulationFrame.messageLabel3 = zonePlayerCurrent;
-		SimulationFrame.messageLabel4 = SizezoneCurrent;
-
 		// afficher le menu du jeu (map, inventaire, save, etc)
 		if (this.MPressed.get()) {
 			if (GameMenuLoaded == false) {
@@ -143,6 +133,24 @@ public class SimplePlatformer extends SimulationFrame {
 				this.MPressed.set(false);
 				SimulationFrame.gameFrame.toFront();
 				GameMenuLoaded = false;
+			}
+		}
+		
+		// zoom and dezoom with createZoneBackground.facteurZoom
+		if (this.PGUPressed.get()) {
+			this.PGUPressed.set(false);
+			if (createZoneBackgrounds.facteurZoom > 0) {
+				createZoneBackgrounds.facteurZoom -=1;
+				createZoneBackgrounds.imageIoWrite();
+				SimulationFrame.updateBackground();
+			}
+		}
+		if (this.PGDPressed.get()) {
+			this.PGDPressed.set(false);
+			if (createZoneBackgrounds.facteurZoom < 2) {
+				createZoneBackgrounds.facteurZoom +=1;
+				createZoneBackgrounds.imageIoWrite();
+				SimulationFrame.updateBackground();
 			}
 		}
 		
@@ -223,11 +231,6 @@ public class SimplePlatformer extends SimulationFrame {
 				ObjectsWorld.bike.translate(-35,0);
 				this.world.addBody(ObjectsWorld.bike);
 			}
-		}
-		
-		if (ObjectsWorld.bike.isInContact(ObjectsWorld.top)) {
-		}
-		if (ObjectsWorld.bike.isInContact(ObjectsWorld.bottom)) {
 		}
 
 		super.update(g, elapsedTime);

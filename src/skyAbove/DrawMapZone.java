@@ -53,6 +53,5 @@ public class DrawMapZone {
 		image = op.filter(image, null);
 		
 		try { ImageIO.write(image, "png", new File("usr/background/currentMap.png")); } catch (IOException e) {}
-		System.out.println("carte de zone créée");
 	}
 }

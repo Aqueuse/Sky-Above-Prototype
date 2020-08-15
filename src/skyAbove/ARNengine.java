@@ -12,7 +12,7 @@ public class ARNengine {
 	static String textureSet;
 	static int sizeZone;
 	static int niveauMax = LoadFile.hauteurZones[LoadFile.zonePlayer];
-	String parseARN;
+	static String parseARN;
 
 	public static int[][] currentMatrice;
 	public static int[][] reliefsMap;
@@ -87,12 +87,12 @@ public class ARNengine {
 		// on configure la zone de façon a commencer et finir
 		// au niveau de la mer (Y=0)
 		reliefsFinal.set(0, 0.0);
-		
+
 		String endStr = String.valueOf(sizeZone-1);
 		String TempEnd = endStr.concat(".0");
 		double endZone = Double.valueOf(TempEnd);
 		reliefsFinal.add(endZone);
-		
+
 		double reliefsDb;
 		String tempStr;
 		String[] tempDb;
@@ -108,6 +108,8 @@ public class ARNengine {
 		int invTrancheHauteur;
 		int rapportDelta = 0;
 
+		int localARN;
+
 		// pour chaque relief, pour chaque X, pour chaque Y
 		currentMatrice = new int[sizeZone+10][9999];
 		reliefsMap = new int[reliefsFinal.size()][2];
@@ -118,12 +120,12 @@ public class ARNengine {
 			tempDb = tempStr.split("\\.");
 			Xcurrent = Integer.parseInt(tempDb[0]);
 			Ycurrent = Integer.parseInt(tempDb[1]);
-			
+
 			//on sauve une version simplifee pour les fonctions
 			//basiques, style creation de map, placement, etc
 			reliefsMap[s][0] = Xcurrent;
 			reliefsMap[s][1] = Ycurrent;
-			
+
 			deltaSize = Math.abs(Xcurrent-lastX);
 			deltaHauteur = Math.abs(Ycurrent-lastY);
 			rapportDelta = Math.abs(deltaHauteur/deltaSize);
@@ -138,8 +140,31 @@ public class ARNengine {
 					invTrancheHauteur = 9999 - trancheHauteur;
 				}
 				
+				// remplissage final
+				// landscape
 				for (int i=invTrancheHauteur; i<9999; i++) {
 					currentMatrice[lastX+l][i]=128;
+				}
+				// sky-empty
+				for (int i=0; i<invTrancheHauteur; i++) {
+					currentMatrice[lastX+l][i]=2304;
+				}
+				
+				//le sommet de la tranche est retravaillé en fonction
+				// du parseARN pour apporter de la variété dans les
+				// reliefs
+
+				// 19*128 = empty = 2432
+				// 14*128 = down = 1792
+				// 15*128 = up = 1920
+				// 0*128 = flat = 0
+
+				localARN = Integer.parseInt(parseARN.substring(lastX+l, lastX+l+1));
+				if (localARN % 2 == 0) {
+					currentMatrice[lastX+l][invTrancheHauteur]=1920;
+				}
+				else {
+					currentMatrice[lastX+l][invTrancheHauteur]=1792;
 				}
 				lastY = trancheHauteur;
 			}
@@ -148,6 +173,5 @@ public class ARNengine {
 		}
 
 		DrawMapZone.imageIoWrite();
-		System.out.println("ARN reloaded");
 	}
 }

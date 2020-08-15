@@ -16,25 +16,24 @@ public class sauvegarde {
 		String Zoneplayer = String.format("%04d", SimplePlatformer.zonePlayerCurrent);
 		String TableauXplayer = String.format("%04d", SimplePlatformer.CurrentXTableauPlayer);
 		String TableauYplayer = String.format("%04d", SimplePlatformer.CurrentYTableauPlayer);
-		
+
 		String NewPOSline = Zoneplayer+","+TableauXplayer+TableauYplayer;
-		System.out.println(NewPOSline);
-		
+
 		//dummy path....
 		Path chemin = Paths.get(LoadFile.selectedPlayer);
 		List<String> oldPlayerSave = Files.readAllLines(chemin);
 		// we replace the old position by the new one
 		oldPlayerSave.set(1, NewPOSline);
-		
+
 		FileWriter writer = new FileWriter(LoadFile.selectedPlayer);
-		
+
 		for (int l =0; l<oldPlayerSave.size(); l++) {
 			writer.write(oldPlayerSave.get(l)+"\n");	
 		}
-		
+
 		writer.close();
-		
-		// ecrire un message pour dire au joueur que la partie est
-		// sauvée
+
+		// tell the player that the party was saved
+		Notifications.setNotificationMessage("partie sauvée");
 	}
 }
