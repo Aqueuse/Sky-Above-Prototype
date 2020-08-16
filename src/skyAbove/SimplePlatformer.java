@@ -135,51 +135,50 @@ public class SimplePlatformer extends SimulationFrame {
 				GameMenuLoaded = false;
 			}
 		}
-		
-		// zoom and dezoom with createZoneBackground.facteurZoom
-		if (this.PGUPressed.get()) {
-			this.PGUPressed.set(false);
-			if (createZoneBackgrounds.facteurZoom > 0) {
-				createZoneBackgrounds.facteurZoom -=1;
-				createZoneBackgrounds.imageIoWrite();
-				SimulationFrame.updateBackground();
-			}
+
+		if (ObjectsWorld.bike.isInContact(ObjectsWorld.bottom) && CurrentYTableauPlayer>=0 && CurrentYTableauPlayer<9990) {
+			this.world.removeBody(ObjectsWorld.bike);
+			this.world.removeBody(ObjectsWorld.plateforms);
+			CurrentYTableauPlayer = CurrentYTableauPlayer+6;
+			createZoneBackgrounds.imageIoWrite();
+			SimulationFrame.updateBackground();
+			ObjectsWorld.bike.translate(0,-18);
+			Platforms.reloadPlatforms();
+			this.world.addBody(ObjectsWorld.bike);
+			this.world.addBody(ObjectsWorld.plateforms);
 		}
-		if (this.PGDPressed.get()) {
-			this.PGDPressed.set(false);
-			if (createZoneBackgrounds.facteurZoom < 2) {
-				createZoneBackgrounds.facteurZoom +=1;
-				createZoneBackgrounds.imageIoWrite();
-				SimulationFrame.updateBackground();
-			}
+
+		if (ObjectsWorld.bike.isInContact(ObjectsWorld.top) && CurrentYTableauPlayer>=0 && CurrentYTableauPlayer<9990) {
+			this.world.removeBody(ObjectsWorld.bike);
+			this.world.removeBody(ObjectsWorld.plateforms);
+			CurrentYTableauPlayer = CurrentYTableauPlayer-6;
+			createZoneBackgrounds.imageIoWrite();
+			SimulationFrame.updateBackground();
+			ObjectsWorld.bike.translate(0,18);
+			Platforms.reloadPlatforms();
+			this.world.addBody(ObjectsWorld.bike);
+			this.world.addBody(ObjectsWorld.plateforms);
 		}
 		
-		if (ObjectsWorld.bike.isInContact(ObjectsWorld.bottom)) {
+		if (ObjectsWorld.bike.isInContact(ObjectsWorld.plateforms)) {
 			if (this.leftPressed.get()) {
 				ObjectsWorld.bike.applyImpulse(new Vector2(-0.05, 0));
 			}
 			if (this.rightPressed.get()) {
 				ObjectsWorld.bike.applyImpulse(new Vector2(0.05, 0));
 			}
-			if (this.downPressed.get() && CurrentYTableauPlayer>=0 && CurrentYTableauPlayer<9990) {
-				this.world.removeBody(ObjectsWorld.bike);
-				CurrentYTableauPlayer = CurrentYTableauPlayer+10;
-				createZoneBackgrounds.imageIoWrite();
-				SimulationFrame.updateBackground();
-				//ObjectsWorld.bike.translate(0,-10);
-				this.world.addBody(ObjectsWorld.bike);
-			}
 			if (this.upPressed.get()) {
 			}
 			if (this.spacePressed.get()) {
-				ObjectsWorld.bike.applyImpulse(new Vector2(0, -3));
+				ObjectsWorld.bike.applyImpulse(new Vector2(0, -10));
 				this.spacePressed.set(false);
 			}
 		}
 
 		if (ObjectsWorld.bike.isInContact(ObjectsWorld.left)) {
 			this.world.removeBody(ObjectsWorld.bike);
-			
+			this.world.removeBody(ObjectsWorld.plateforms);
+
 			if (CurrentXTableauPlayer == 0) {
 				zonePlayerCurrent = zonePlayerCurrent-1;
 				if (zonePlayerCurrent == 0) {
@@ -193,21 +192,26 @@ public class SimplePlatformer extends SimulationFrame {
 				ARNengine.induceARN(currentADN);
 				createZoneBackgrounds.imageIoWrite();
 				DrawMapZone.imageIoWrite();
+				Platforms.reloadPlatforms();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(35,0);
 				this.world.addBody(ObjectsWorld.bike);
+				this.world.addBody(ObjectsWorld.plateforms);
 			}
 			else {
 				CurrentXTableauPlayer = CurrentXTableauPlayer-10;
 				createZoneBackgrounds.imageIoWrite();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(35,0);
+				Platforms.reloadPlatforms();
 				this.world.addBody(ObjectsWorld.bike);
+				this.world.addBody(ObjectsWorld.plateforms);
 			}
 		}
 
 		if (ObjectsWorld.bike.isInContact(ObjectsWorld.right)) {
 			this.world.removeBody(ObjectsWorld.bike);
+			this.world.removeBody(ObjectsWorld.plateforms);
 
 			if (CurrentXTableauPlayer == SizezoneCurrent) {
 				zonePlayerCurrent = zonePlayerCurrent+1;
@@ -222,14 +226,18 @@ public class SimplePlatformer extends SimulationFrame {
 				DrawMapZone.imageIoWrite();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(-35,0);
+				Platforms.reloadPlatforms();
 				this.world.addBody(ObjectsWorld.bike);
+				this.world.addBody(ObjectsWorld.plateforms);
 			}
 			else {
 				CurrentXTableauPlayer = CurrentXTableauPlayer+10;
 				createZoneBackgrounds.imageIoWrite();
 				SimulationFrame.updateBackground();
 				ObjectsWorld.bike.translate(-35,0);
+				Platforms.reloadPlatforms();
 				this.world.addBody(ObjectsWorld.bike);
+				this.world.addBody(ObjectsWorld.plateforms);
 			}
 		}
 

@@ -87,21 +87,21 @@ public abstract class SimulationFrame {
 		landscapePanel.add(landscapeCanvas);
 		gameFrame.add(gamePanel);
 		gamePanel.add(landscapePanel);
-		
+
 		// la internalFrame du menu
 		menuFrame.add(PanelsContainerGame);
 		desktop.add(menuFrame);
 		desktop.add(gameFrame);
 		menu.frame.add(desktop);
-				
+
 	    Robot robot = null;
 		try {robot = new Robot();} catch (AWTException e) {e.printStackTrace();}
 	    robot.mousePress(InputEvent.BUTTON1_MASK);
 	    robot.mouseRelease(InputEvent.BUTTON1_MASK);
-		
+
 		this.initializeWorld(); // setup the world
 	}
-	
+
 	// Creates fixed game objects and adds them to the world.
 	protected abstract void initializeWorld() throws IOException;
 	

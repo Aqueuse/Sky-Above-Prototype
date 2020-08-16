@@ -107,6 +107,7 @@ public class ARNengine {
 		int trancheHauteur;
 		int invTrancheHauteur;
 		int rapportDelta = 0;
+		boolean down;
 
 		int localARN;
 
@@ -134,40 +135,79 @@ public class ARNengine {
 				if (Ycurrent < lastY) {  /* down */ 
 					trancheHauteur = Math.abs(lastY-rapportDelta);
 					invTrancheHauteur = 9999 - trancheHauteur;
+					down=true;
 				}
 				else { // up
 					trancheHauteur = Math.abs(lastY+rapportDelta);
 					invTrancheHauteur = 9999 - trancheHauteur;
+					down=false;
 				}
-				
+
 				// remplissage final
+				String tranche = String.valueOf(trancheHauteur);
+				String trancheARN="";
+				
+				// on crée un ARNvertical pour chaque tranche, afin de
+				//pouvoir distribuer les platformes et autres bonus ou
+				//objets du jeu
+				while (trancheARN.length() < trancheHauteur) {
+					for (int i = 0; i<trancheARN.length(); i++) {
+						subARN = tranche.substring(i,i+1);
+						intARN = Integer.parseInt(subARN);
+						random.setSeed(intARN);
+
+						tempARN = random.nextInt();
+						subARN = Integer.toString(tempARN);
+						outputARN = outputARN+subARN.substring(5);
+					}
+					trancheARN = trancheARN+outputARN;
+				}
+
+				trancheARN = trancheARN.substring(0, trancheHauteur);
+				int localVerticalARN;
+				int incrY=0;
+
 				// landscape
 				for (int i=invTrancheHauteur; i<9999; i++) {
-					currentMatrice[lastX+l][i]=128;
+					localVerticalARN=Integer.parseInt(trancheARN.substring(incrY, incrY+1));
+					incrY+=1;
+					if (localVerticalARN%2 == 0) {
+						currentMatrice[lastX+l][i]=128;
+					}
+					else {
+						currentMatrice[lastX+l][i]=0;			
+					}
 				}
 				// sky-empty
 				for (int i=0; i<invTrancheHauteur; i++) {
 					currentMatrice[lastX+l][i]=2304;
 				}
-				
+
 				//le sommet de la tranche est retravaillé en fonction
 				// du parseARN pour apporter de la variété dans les
 				// reliefs
 
 				// 19*128 = empty = 2432
-				// 14*128 = down = 1792
-				// 15*128 = up = 1920
+				// 13*128 = down = 1664
+				// 14*128 = up = 1792
 				// 0*128 = flat = 0
 
 				localARN = Integer.parseInt(parseARN.substring(lastX+l, lastX+l+1));
 				if (localARN % 2 == 0) {
-					currentMatrice[lastX+l][invTrancheHauteur]=1920;
+					currentMatrice[lastX+l][invTrancheHauteur]=0;
 				}
 				else {
-					currentMatrice[lastX+l][invTrancheHauteur]=1792;
+					// on change le tile selon qu'on monte ou descende
+					if (down==true) {
+						currentMatrice[lastX+l][invTrancheHauteur]=1664;						
+					}
+					else {
+						currentMatrice[lastX+l][invTrancheHauteur]=1792;
+					}
 				}
 				lastY = trancheHauteur;
 			}
+
 			lastX = Xcurrent;
 			lastY = Ycurrent;
 		}
