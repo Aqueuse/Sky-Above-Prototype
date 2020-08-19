@@ -91,7 +91,6 @@ public class GameMenu implements ActionListener {
 		case "Sauver" :
 			sauvegarde GameSave = new sauvegarde();
 			try {GameSave.Save(); } catch (Exception e1) { e1.printStackTrace(); }
-			SimulationFrame.CardGame.last(SimulationFrame.PanelsContainerGame);
 			break;
 		case "Quitter" :
 			int halt = showConfirmDialog();

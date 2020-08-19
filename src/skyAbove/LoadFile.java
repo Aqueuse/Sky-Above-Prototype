@@ -53,7 +53,8 @@ public class LoadFile  implements ActionListener {
 	static Integer[] hauteurZones = new Integer[4000];
 	static String[] adnZones = new String[4000];
 
-	static int positionPlayer;
+	static int currentRelXPlayer;
+	static int currentRelYPlayer;
 	static int zonePlayer;
 	static String tableauXPlayer;
 	static String tableauYPlayer;
@@ -178,8 +179,11 @@ public class LoadFile  implements ActionListener {
 		tableauXPlayer = CSVplayer[1][1].substring(0, 4);
 		tableauYPlayer = CSVplayer[1][1].substring(4, 8);
 
+		// position relative dans le tableau 00(X)00(Y)
+		currentRelXPlayer = Integer.parseInt(CSVplayer[0][2].substring(0, 2));
+		currentRelYPlayer = Integer.parseInt(CSVplayer[0][2].substring(2, 4));
+		
 		DrawMapMonde.imageIoWrite(selectedMap);
-		SimplePlatformer.CurrentXTableauPlayer = Integer.parseInt(LoadFile.tableauXPlayer);
 		ARNengine.induceARN(LoadFile.adnZones[zonePlayer]);
 		createZoneBackgrounds.imageIoWrite();
 	}

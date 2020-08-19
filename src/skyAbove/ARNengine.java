@@ -175,7 +175,7 @@ public class ARNengine {
 						currentMatrice[lastX+l][i]=128;
 					}
 					else {
-						currentMatrice[lastX+l][i]=0;			
+						currentMatrice[lastX+l][i]=0;	
 					}
 				}
 				// sky-empty
@@ -199,7 +199,7 @@ public class ARNengine {
 				else {
 					// on change le tile selon qu'on monte ou descende
 					if (down==true) {
-						currentMatrice[lastX+l][invTrancheHauteur]=1664;						
+						currentMatrice[lastX+l][invTrancheHauteur]=1664;
 					}
 					else {
 						currentMatrice[lastX+l][invTrancheHauteur]=1792;

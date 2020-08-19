@@ -35,7 +35,6 @@ public class createZoneBackgrounds {
 		BufferedImage textureSET = null;
 		try { textureSET = ImageIO.read(new File(imgPath));} catch (IOException e) {}
 
-
 		// si le tableau est en bas, on dessine aussi la road
 		if (SimplePlatformer.CurrentYTableauPlayer == 9990) {
 			BufferedImage textureRoad = null;

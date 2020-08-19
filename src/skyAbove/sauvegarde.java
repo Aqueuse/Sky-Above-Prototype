@@ -9,6 +9,8 @@ import java.util.List;
 
 public class sauvegarde {
 	public void Save() throws IOException {
+		Locate.locatePlayer();
+
 		// ecrire le tableau current et la zone current dans
 		// le fichier CSV du player current
 		
@@ -18,12 +20,14 @@ public class sauvegarde {
 		String TableauYplayer = String.format("%04d", SimplePlatformer.CurrentYTableauPlayer);
 
 		String NewPOSline = Zoneplayer+","+TableauXplayer+TableauYplayer;
+		String NewRelPOSline = String.format("%02d",Locate.currentTileX)+String.format("%02d",Locate.currentTileY)+",00000000";
 
 		//dummy path....
 		Path chemin = Paths.get(LoadFile.selectedPlayer);
 		List<String> oldPlayerSave = Files.readAllLines(chemin);
 		// we replace the old position by the new one
 		oldPlayerSave.set(1, NewPOSline);
+		oldPlayerSave.set(2, NewRelPOSline);
 
 		FileWriter writer = new FileWriter(LoadFile.selectedPlayer);
 

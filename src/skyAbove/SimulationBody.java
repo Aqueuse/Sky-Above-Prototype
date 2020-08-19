@@ -98,12 +98,7 @@ public class SimulationBody extends Body {
 	protected void renderFixture(Graphics2D g, double scale, BodyFixture fixture, Color color) {
 		// get the shape on the fixture
 		Convex convex = fixture.getShape();
-		
-		// brighten the color if asleep
-		if (this.isAsleep()) {
-			color = color.brighter();
-		}
-		
+				
 		// render the fixture
 		Graphics2DRenderer.render(g, convex, scale, color);
 	}
