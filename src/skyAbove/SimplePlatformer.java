@@ -25,10 +25,8 @@ public class SimplePlatformer extends SimulationFrame {
 	
 	int fall=0;
 	boolean modeGrappin=false;
-	boolean grappinClimb=false;
-	boolean grabLeft=false;
-	boolean grabRight=false;
-	
+	boolean grappinHooked=false;
+
 	// toggle the Game menu
 	static boolean GameMenuLoaded = false;
 	GameMenu menuGame = new GameMenu();
@@ -128,7 +126,7 @@ public class SimplePlatformer extends SimulationFrame {
 			}
 		}
 		
-		 //le grappin
+///////////////////  le grappin  ////////////////////////////////////
 		if (this.upPressed.get() && modeGrappin==false) {
 			modeGrappin=true;
 			this.upPressed.set(false);
@@ -138,7 +136,6 @@ public class SimplePlatformer extends SimulationFrame {
 			}
 
 		if (this.downPressed.get() && modeGrappin==true) {
-			modeGrappin=false;
 			this.downPressed.set(false);
 			ObjectsWorld.basePl.clearAccumulatedForce();
 			ObjectsWorld.basePl.setActive(true);
@@ -146,22 +143,33 @@ public class SimplePlatformer extends SimulationFrame {
 			modeGrappinOff();
 		}
 		
-		if (this.leftPressed.get() && modeGrappin==true && grappinClimb == false) {
+		// grab the hook
+		if (this.leftPressed.get() && modeGrappin==true && grappinHooked == false
+			&& this.world.containsBody(ObjectsWorld.accrocheLeft)) {
 			this.leftPressed.set(false);
-			grabLeft = true;
-			grabRight = false;
-			grappinClimb = true;
-			connectGrapple();
+			grappinHooked = true;
+			connectGrapple(0);
 		}
 
-		if (this.rightPressed.get() && modeGrappin==true && grappinClimb == false) {
+		if (this.rightPressed.get() && modeGrappin==true && grappinHooked == false
+		    && this.world.containsBody(ObjectsWorld.accrocheRight)) {
 			this.rightPressed.set(false);
-			grabRight = true;
-			grabLeft = false;
-			grappinClimb = true;
-			connectGrapple();
+			grappinHooked = true;
+			connectGrapple(1);
 		}
 
+		if (this.leftPressed.get() && grappinHooked==true) {
+			ObjectsWorld.basePl.applyImpulse(new Vector2(-0.07, 0));				
+		}
+		if (this.rightPressed.get() && grappinHooked==true) {
+			ObjectsWorld.basePl.applyImpulse(new Vector2(0.07, 0));
+		}
+		if (this.upPressed.get() && grappinHooked==true) {
+			ObjectsWorld.basePl.applyImpulse(new Vector2(0.07, 0));
+		}
+		
+///////////////////////////////////////////////////////////////////////////
+		
 		if (ObjectsWorld.basePl.isInContact(ObjectsWorld.bottom) && CurrentYTableauPlayer>=0 && CurrentYTableauPlayer<9990) {
 			this.world.removeBody(ObjectsWorld.basePl);
 			this.world.removeBody(ObjectsWorld.plateforms);
@@ -173,7 +181,7 @@ public class SimplePlatformer extends SimulationFrame {
 			this.world.addBody(ObjectsWorld.basePl);
 			this.world.addBody(ObjectsWorld.plateforms);
 			fall++;
-			
+
 			if (fall>=2) {
 				ObjectsWorld.basePl.setAsleep(true);
 				ObjectsWorld.basePl.setAsleep(false);
@@ -194,14 +202,14 @@ public class SimplePlatformer extends SimulationFrame {
 		
 		if (ObjectsWorld.basePl.isInContact(ObjectsWorld.plateforms)) {
 			fall=0;
-			if (this.leftPressed.get() && modeGrappin==false) {
+			if (this.leftPressed.get() && modeGrappin== false && grappinHooked==false) {
 				ObjectsWorld.basePl.applyImpulse(new Vector2(-0.07, 0));
 			}
-			if (this.rightPressed.get() && modeGrappin==false) {
+			if (this.rightPressed.get() && modeGrappin==false && grappinHooked==false) {
 				ObjectsWorld.basePl.applyImpulse(new Vector2(0.07, 0));
 			}
 
-			if (this.spacePressed.get() && modeGrappin==false) {
+			if (this.spacePressed.get() && modeGrappin==false && grappinHooked==false) {
 				ObjectsWorld.basePl.applyImpulse(new Vector2(0, -10));
 				this.spacePressed.set(false);
 			}
@@ -280,78 +288,60 @@ public class SimplePlatformer extends SimulationFrame {
 		// quand le joueur appuie sur la flèche du haut,
 		// regarde sa position et s'il y a une plateforme
 		// au dessus de sa tête (à sa gauche, à sa droite et au dessus de lui)
-
 		// fait apparaitre des les accroches aux extrémités de ces plateformes.
 
 		// si le joueur appuie sur down, fait disparaitre les accroches
 		Locate.locatePlayer();
 
-		if (Platforms.platformsArray[Locate.currentTileX-1][Locate.currentTileY]>0
+		if (Platforms.platformsArray[Math.abs(Locate.currentTileX-1)][Math.abs(Locate.currentTileY)]>0
 		 || Platforms.platformsArray[Locate.currentTileX][Locate.currentTileY]>0) {
 			this.world.addBody(ObjectsWorld.accrocheLeft);
 			ObjectsWorld.accrocheLeft.translateToOrigin();
 			ObjectsWorld.accrocheLeft.translate((Locate.currentTileX*4), (Locate.currentTileY*4)+0.5);
 		}
 
-		if (Platforms.platformsArray[Locate.currentTileX][Locate.currentTileY]>0
+		if (Platforms.platformsArray[Math.abs(Locate.currentTileX)][Math.abs(Locate.currentTileY)]>0
 		 || Platforms.platformsArray[Locate.currentTileX+1][Locate.currentTileY]>0) {
 			this.world.addBody(ObjectsWorld.accrocheRight);
 			ObjectsWorld.accrocheRight.translateToOrigin();
 			ObjectsWorld.accrocheRight.translate((Locate.currentTileX*4)+4, (Locate.currentTileY*4)+0.5);
 		}
 
-		// par défaut, selectionne l'accroche gauche de la plateforme située
-		// au dessus à gauche
-		
-		if (this.world.containsBody(ObjectsWorld.accrocheLeft) &&
-			this.world.containsBody(ObjectsWorld.accrocheRight)) {
-			ObjectsWorld.accrocheLeft.setColor(Color.gray);	
-		}
-		
-		else {
-			ObjectsWorld.accrocheRight.setColor(Color.gray);			
-		}
-
 		// si le joueur appuie alors sur gauche
-		// selectionne l'accroche et selectionne celle de gauche
-		// a la place, puis celle plus à gauche, etc, etc 
-
-		//même chose a droite
+		// selectionne l'accroche de gauche et fait disparaitre l'autre
+		// (même chose a droite)
 		
-// si le joueur appuie sur espace, deploie le grapin et fait monter
-// légèrement le joueur. Appuyer plusieurs fois sur espace pour faire
-// monter le joueur petit a petit
-	// le grapin diminue section par section
+		// si le joueur appuie dans la direction opposée du déploiement
+		// du grappin, provoque une légère impulsion pour l'aider
 
-// si le joueur appuie vers le bas, le grapin reaugmente section par section
-	// si le grappin est au maximum et que le joueur rappuie sur bas
-	// fait disparaitre le grappin et les accroches
+		// si le joueur appuie sur up, fait monter légèrement le joueur
+		// en diminuant la longueur de la corde.
+		
+		// quand la corde est assez courte, un dernier appuie fait monter
+		// le joueur sur la plateforme où est accroché le grappin
 
-// si aucune plateforme ne se trouve à côté de l'accroche du grappin
-	// quand il ne reste plus qu'une section au grappin, le dernier
-	// appui sur espace déplace le joueur sur la plateforme de l'accroche.
+		// si le joueur appuie vers le bas, le grapin reaugmente section par section
+		// si le grappin est au maximum et que le joueur appuie encore sur bas
+		// fait disparaitre le grappin et les accroches (retour au comportement initial)
 
 	}
 
 	public void modeGrappinOff() {
 		if (this.world.containsBody(ObjectsWorld.accrocheLeft)) this.world.removeBody(ObjectsWorld.accrocheLeft);
 		if (this.world.containsBody(ObjectsWorld.accrocheRight)) this.world.removeBody(ObjectsWorld.accrocheRight);
-//		if (this.world.containsJoint(ropeJointLeft) this.world.removeJoint(ObjectsWorld.ropeJointLeft);
-//		if (this.world.containsJoint(ropeJointRight) this.world.removeJoint(ObjectsWorld.ropeJointRight);
-		
+
 		ObjectsWorld.accrocheLeft.setColor(Color.darkGray);
 		ObjectsWorld.accrocheRight.setColor(Color.darkGray);
 
 		ObjectsWorld.basePl.setActive(true);
 		ObjectsWorld.basePl.setAsleep(false);
-
-		grabLeft=false;
-		grabRight=false;
-		grappinClimb=false;
+		
+		modeGrappin=false;
+		grappinHooked=false;
 	}
 
-	public void connectGrapple() {
-		if (grabLeft == true) {
+	public void connectGrapple(int direction) {
+		if (direction == 0) {
 			this.world.removeBody(ObjectsWorld.accrocheRight);
 			ObjectsWorld.accrocheLeft.setColor(Color.gray);
 
@@ -361,7 +351,7 @@ public class SimplePlatformer extends SimulationFrame {
 			ObjectsWorld.basePl.setAsleep(false);
 
 }
-		if (grabRight == true) {
+		if (direction == 1) {
 			this.world.removeBody(ObjectsWorld.accrocheLeft);
 			ObjectsWorld.accrocheRight.setColor(Color.gray);
 
@@ -369,7 +359,6 @@ public class SimplePlatformer extends SimulationFrame {
 
 			ObjectsWorld.basePl.setActive(true);
 			ObjectsWorld.basePl.setAsleep(false);
-			
 		}
 	}
 }
