@@ -20,7 +20,7 @@ public class sauvegarde {
 		String TableauYplayer = String.format("%04d", SimplePlatformer.CurrentYTableauPlayer);
 
 		String NewPOSline = Zoneplayer+","+TableauXplayer+TableauYplayer;
-		String NewRelPOSline = String.format("%02d",Locate.currentTileX)+String.format("%02d",Locate.currentTileY)+",00000000";
+		String NewRelPOSline = String.format("%02d",Locate.locatePlayer()[0])+String.format("%02d",Locate.locatePlayer()[1])+",00000000";
 
 		//dummy path....
 		Path chemin = Paths.get(LoadFile.selectedPlayer);

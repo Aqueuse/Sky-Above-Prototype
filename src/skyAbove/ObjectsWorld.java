@@ -23,21 +23,12 @@ public class ObjectsWorld {
 	public static SimulationBody handsPl = new SimulationBody();
 	public static MotorJoint movePl = new MotorJoint(basePl, plateforms);
 	public static Rectangle body = new Rectangle(0.8, 0.8);
+	public static BodyFixture bodyBase = new BodyFixture(body);
 
 	// les accroches pour l'escalade
 	public static Rectangle accroche = new Rectangle(0.5,1);
 	public static SimulationBody accrocheLeft = new SimulationBody();
 	public static SimulationBody accrocheRight = new SimulationBody();
-
-	static double[] anchor = {0,0,0,0};
-	
-	// la corde du grappin
-	
-	public static RopeJoint ropeJointRight = new RopeJoint(
-			ObjectsWorld.accrocheRight,
-			ObjectsWorld.basePl,
-			new Vector2(anchor[0], anchor[1]),
-			new Vector2(anchor[2], anchor[3]));
 
 	public static void connectObjects() {
 		left.setMass(MassType.INFINITE);
@@ -49,7 +40,7 @@ public class ObjectsWorld {
 
 		accrocheLeft.setColor(Color.darkGray);
 		accrocheRight.setColor(Color.darkGray);
-				
+
 		left.addFixture(new Segment(new Vector2(0,0), new Vector2(0,22.4)));
 		right.addFixture(new Segment(new Vector2(39.5,0), new Vector2(39.5,22.4)));
 		top.addFixture(new Segment(new Vector2(0,0), new Vector2(39.5,0)));
@@ -58,7 +49,6 @@ public class ObjectsWorld {
 		ObjectsWorld.accrocheLeft.addFixture(ObjectsWorld.accroche);
 		ObjectsWorld.accrocheRight.addFixture(ObjectsWorld.accroche);
 
-		BodyFixture bodyBase = new BodyFixture(body);
 		bodyBase.setFriction(0.3);
 		basePl.addFixture(bodyBase);
 		basePl.translate((LoadFile.currentRelXPlayer*4)+2,(LoadFile.currentRelYPlayer*4)+3.8);
@@ -68,7 +58,7 @@ public class ObjectsWorld {
 		basePl.createAABB();
 	}
 	
-	public static RopeJoint connectGrapple(SimulationBody anchor1, SimulationBody anchor2) {
+	public static RopeJoint addGrapple(SimulationBody anchor1, SimulationBody anchor2, double upperLimit) {
 		RopeJoint ropeJoint = new RopeJoint(
 				anchor1,
 				anchor2,
@@ -80,6 +70,12 @@ public class ObjectsWorld {
 						anchor2.getWorldCenter().y
 						)
 				);
+
+		ropeJoint.setLowerLimit(0.0);
+		ropeJoint.setLowerLimitEnabled(true);
+		ropeJoint.setUpperLimit(upperLimit);
+		ropeJoint.setUpperLimitEnabled(true);
+
 		return ropeJoint;
 	}
 }
