@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 public class LoadFile  implements ActionListener {
     public final static JPanel PanCharger = new JPanel();
@@ -31,7 +32,7 @@ public class LoadFile  implements ActionListener {
     private final static JLabel headMenu = new JLabel("Mes mondes");
  	private final static JList<String> listFile = new JList<>();
     private final static JScrollPane scrollableList = new JScrollPane(listFile);
-
+    
  	// récuperer les noms des mondes dans le dossier map
  	static File dossierMap = new File("usr/map");
 	public static String[] listMap = dossierMap.list();
@@ -113,6 +114,7 @@ public class LoadFile  implements ActionListener {
 		}
 
 	 	listFile.setListData(WorldsListing);
+	 	listFile.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         PanCharger.add(scrollableList, gbc_list);
@@ -138,14 +140,16 @@ public class LoadFile  implements ActionListener {
 			break;
 		case "Charger" :
 			int selected = listFile.getSelectedIndex();
-			selectedMap = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\map\\"+listMap[selected];
-			selectedPlayer = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\player\\"+listMap[selected];
-			nameWorld = LoadFile.nameWorlds[selected];
-			try {
-				loadWorld(selectedMap, selectedPlayer);
-				SimplePlatformer simulation = new SimplePlatformer();
-				simulation.run();
-			} catch (IOException e1) {e1.printStackTrace();}
+			if (selected>=0) {
+				selectedMap = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\map\\"+listMap[selected];
+				selectedPlayer = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\player\\"+listMap[selected];
+				nameWorld = LoadFile.nameWorlds[selected];
+				try {
+					loadWorld(selectedMap, selectedPlayer);
+					SimplePlatformer simulation = new SimplePlatformer();
+					simulation.run();
+				} catch (IOException e1) {e1.printStackTrace();}
+			}
 		}
 	}
 

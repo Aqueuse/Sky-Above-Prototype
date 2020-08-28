@@ -34,7 +34,7 @@ public class SimplePlatformer extends SimulationFrame {
 	// toggle the Game menu
 	static boolean GameMenuLoaded = false;
 	GameMenu menuGame = new GameMenu();
-	
+
 	public SimplePlatformer() throws IOException {
 		super(LoadFile.nameWorld, 32);
 		KeyListener listener = new CustomKeyListener();
