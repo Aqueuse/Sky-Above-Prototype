@@ -71,7 +71,7 @@ public class createNewLandscape implements ActionListener {
 				}
 				
 				LoadFile.loadWorld(generateWorld.cheminNewWorld, generateWorld.cheminNewPlayer);
-				SimplePlatformer simulation = new SimplePlatformer();
+				SimplePlatformer simulation = new SimplePlatformer(null, 0);
 				simulation.run();
 				menu.PanelsContainer.remove(createNewLandscape.PanNouveau);
 				menu.card.last(menu.PanelsContainer);

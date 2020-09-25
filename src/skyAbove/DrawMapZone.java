@@ -24,8 +24,8 @@ public class DrawMapZone {
 		Graphics2D g2 = image.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		// remplir le fond avec du bleu ciel
-		g2.setColor(SimulationFrame.BleuCiel);
+		// remplir le fond avec du darker ciel
+		g2.setColor(SimulationFrame.DarkerCiel);
 		g2.fillRect(0, 0, ImageWidth, ImageHeight);
 		
 		int lastX = 0;

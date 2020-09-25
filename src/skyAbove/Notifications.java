@@ -14,7 +14,7 @@ public class Notifications {
 	
 	public static void timeUp() {
 	    Timer timer = new Timer();
-	    long delay = 5000L;
+	    long delay = 3000L;
 	    TimerTask task = new TimerTask() {
 		    public void run() {
 	        	messageNotification = "";

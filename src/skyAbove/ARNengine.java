@@ -10,7 +10,7 @@ import java.util.Random;
 public class ARNengine {
 	public static boolean ARNloaded = false;
 	static String textureSet;
-	static int sizeZone;
+	static int sizeZone = 0;
 	static int niveauMax = LoadFile.hauteurZones[LoadFile.zonePlayer];
 	static String parseARN;
 
@@ -28,7 +28,7 @@ public class ARNengine {
 		String parseARN = LoadFile.adnZones[LoadFile.zonePlayer];
 		Random random = new Random();
 
-		// creation de l'ARN à partir de l'ADN
+		// creation de l'ARN a partir de l'ADN
 		while (parseARN.length() < 10000) {
 			for (int i = 0; i<parseARN.length(); i++) {
 				subARN = parseARN.substring(i,i+1);
@@ -42,7 +42,7 @@ public class ARNengine {
 			parseARN = parseARN+outputARN;
 		}
 
-		// récupérer les informations du caraType pour le dessin
+		// rï¿½cupï¿½rer les informations du caraType pour le dessin
 		String[][] caraTypes = readCSV.loadFile("ressources/caraTypes.csv");
 		String typeZone = LoadFile.typesZones[LoadFile.zonePlayer].substring(0, 2);
 
@@ -55,7 +55,7 @@ public class ARNengine {
 
 		parseARN = parseARN.substring(0, sizeZone);
 
-		// transfert vers la carte schématique pre-tracage
+		// transfert vers la carte schematique pre-tracage
 		int range = 2;
 		int reliefsNumber = Integer.parseInt(parseARN.substring(0,range));
 		if (reliefsNumber<10) {
@@ -84,7 +84,7 @@ public class ARNengine {
 		LinkedHashSet<Double> hashSet = new LinkedHashSet<Double>(reliefsArray);
 		ArrayList<Double> reliefsFinal = new ArrayList<Double>(hashSet);
 
-		// on configure la zone de façon a commencer et finir
+		// on configure la zone de faï¿½on a commencer et finir
 		// au niveau de la mer (Y=0)
 		reliefsFinal.set(0, 0.0);
 
@@ -112,7 +112,7 @@ public class ARNengine {
 		int localARN;
 
 		// pour chaque relief, pour chaque X, pour chaque Y
-		currentMatrice = new int[sizeZone+10][9999];
+		currentMatrice = new int[sizeZone+10][10000];
 		reliefsMap = new int[reliefsFinal.size()][2];
 
 		for (int s=1; s<reliefsFinal.size(); s++) {
@@ -147,7 +147,7 @@ public class ARNengine {
 				String tranche = String.valueOf(trancheHauteur);
 				String trancheARN="";
 				
-				// on crée un ARNvertical pour chaque tranche, afin de
+				// on crï¿½e un ARNvertical pour chaque tranche, afin de
 				//pouvoir distribuer les platformes et autres bonus ou
 				//objets du jeu
 				while (trancheARN.length() < trancheHauteur) {
@@ -172,25 +172,26 @@ public class ARNengine {
 					localVerticalARN=Integer.parseInt(trancheARN.substring(incrY, incrY+1));
 					incrY+=1;
 					if (localVerticalARN%2 == 0) {
-						currentMatrice[lastX+l][i]=128;
+						currentMatrice[lastX+l][i]=40; // tile nu
 					}
 					else {
-						currentMatrice[lastX+l][i]=0;	
+						currentMatrice[lastX+l][i]=10; //plateforme flat
 					}
 				}
 				// sky-empty
 				for (int i=0; i<invTrancheHauteur; i++) {
-					currentMatrice[lastX+l][i]=2304;
+					currentMatrice[lastX+l][i]=0; //empty
 				}
 
-				//le sommet de la tranche est retravaillé en fonction
-				// du parseARN pour apporter de la variété dans les
+				//le sommet de la tranche est retravaillï¿½ en fonction
+				// du parseARN pour apporter de la variï¿½tï¿½ dans les
 				// reliefs
 
-				// 19*128 = empty = 2432
-				// 13*128 = down = 1664
-				// 14*128 = up = 1792
-				// 0*128 = flat = 0
+				// empty = 0
+				// flat = 10
+				// down = 20
+				// up = 30
+				// tile nu = 40
 
 				localARN = Integer.parseInt(parseARN.substring(lastX+l, lastX+l+1));
 				if (localARN % 2 == 0) {
@@ -199,10 +200,10 @@ public class ARNengine {
 				else {
 					// on change le tile selon qu'on monte ou descende
 					if (down==true) {
-						currentMatrice[lastX+l][invTrancheHauteur]=1664;
+						currentMatrice[lastX+l][invTrancheHauteur]=20; //down
 					}
 					else {
-						currentMatrice[lastX+l][invTrancheHauteur]=1792;
+						currentMatrice[lastX+l][invTrancheHauteur]=30; // up
 					}
 				}
 				lastY = trancheHauteur;

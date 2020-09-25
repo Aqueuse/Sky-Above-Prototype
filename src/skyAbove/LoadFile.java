@@ -32,7 +32,7 @@ public class LoadFile  implements ActionListener {
     private final static JLabel headMenu = new JLabel("Mes mondes");
  	private final static JList<String> listFile = new JList<>();
     private final static JScrollPane scrollableList = new JScrollPane(listFile);
-    
+
  	// récuperer les noms des mondes dans le dossier map
  	static File dossierMap = new File("usr/map");
 	public static String[] listMap = dossierMap.list();
@@ -109,7 +109,7 @@ public class LoadFile  implements ActionListener {
 			    
 			    BasicFileAttributes attr = Files.readAttributes(cheminPlayerPath, BasicFileAttributes.class);
 			    FileTime fileTime = attr.creationTime();
-				WorldsListing[i] = nameWorlds[i]+",\r créé le "+fileTime.toString().substring(0, 10);
+				WorldsListing[i] = nameWorlds[i]+" créé le "+fileTime.toString().substring(0, 10);
 			} catch (IOException ex) { }
 		}
 
@@ -146,7 +146,7 @@ public class LoadFile  implements ActionListener {
 				nameWorld = LoadFile.nameWorlds[selected];
 				try {
 					loadWorld(selectedMap, selectedPlayer);
-					SimplePlatformer simulation = new SimplePlatformer();
+					SimplePlatformer simulation = new SimplePlatformer(null, selected);
 					simulation.run();
 				} catch (IOException e1) {e1.printStackTrace();}
 			}
@@ -182,13 +182,21 @@ public class LoadFile  implements ActionListener {
 		// 0000(X)0000(Y)
 		tableauXPlayer = CSVplayer[1][1].substring(0, 4);
 		tableauYPlayer = CSVplayer[1][1].substring(4, 8);
-
+		
 		// position relative dans le tableau 00(X)00(Y)
 		currentRelXPlayer = Integer.parseInt(CSVplayer[0][2].substring(0, 2));
 		currentRelYPlayer = Integer.parseInt(CSVplayer[0][2].substring(2, 4));
 		
+		SimplePlatformer.CurrentXTableauPlayer = Integer.parseInt(tableauXPlayer);
+		SimplePlatformer.CurrentYTableauPlayer = Integer.parseInt(tableauYPlayer);
+
 		DrawMapMonde.imageIoWrite(selectedMap);
 		ARNengine.induceARN(LoadFile.adnZones[zonePlayer]);
-		createZoneBackgrounds.imageIoWrite();
+	}
+	
+	public void chooseCharacter() {
+		// show a list of the existing characters (in ressources/characters)
+		// quand le player en sélectionne un, montrer une preview
+		// dans un petit carré à droite
 	}
 }

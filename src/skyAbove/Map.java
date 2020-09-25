@@ -44,7 +44,7 @@ public class Map extends JPanel {
 		int WhereY = ((int)SimplePlatformer.CurrentYTableauPlayer/20);
 
 		g2.setColor(Color.red);
-		g2.fillOval(WhereX, WhereY-7, 10, 10);
+		g2.fillOval(WhereX-7, WhereY-7, 10, 10);
 		
 		g2.dispose();
 	}

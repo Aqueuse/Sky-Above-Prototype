@@ -24,7 +24,7 @@ public class GameMenu implements ActionListener {
 
 	public void ShowGameMenu() {
 		MenuGameGlobal.setLayout(GridBagMenu);
-		MenuGameGlobal.setBackground(SimulationFrame.BleuCiel);
+		MenuGameGlobal.setBackground(SimulationFrame.DarkerCiel);
 		
 		SimulationFrame.menuFrame.add(MenuGameGlobal, BorderLayout.WEST);
 

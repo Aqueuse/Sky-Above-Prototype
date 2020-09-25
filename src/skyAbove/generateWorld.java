@@ -86,7 +86,7 @@ public class generateWorld {
 				chromaCharsOcean[1] = tempOceanType.substring(1).charAt(0);
 				chromaCharsOcean[2] = tempOceanType.substring(0).charAt(0);
 
-				// change the size for the max : 9999
+				// change the size for the max : 990
 				chromaCharsOcean[3] = "9".charAt(0);
 				chromaCharsOcean[4] = "9".charAt(0);
 				chromaCharsOcean[5] = "0".charAt(0);
@@ -125,7 +125,7 @@ public class generateWorld {
 		// et la position initiale du joueur (index zone, coordonnéesXY)
 		// dans un CSV (usr/player/)
 		arrayPlayer.append(createNewLandscape.nameWorld.getText()+ "," + "player1" + "\n");
-		arrayPlayer.append("0000,00000000\n");
+		arrayPlayer.append("0000,00009990\n");
 		arrayPlayer.append("0000,00000000");
 		arrayPlayer.close();
 

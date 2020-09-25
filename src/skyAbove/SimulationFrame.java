@@ -23,11 +23,12 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.dyn4j.dynamics.World;
 import com.formdev.flatlaf.FlatLightLaf;
+import org.dyn4j.world.World;
 
 public abstract class SimulationFrame {
 	public static final Color BleuCiel = new Color(193, 229, 247);
+	public static final Color DarkerCiel = new Color(187, 223, 241);
 
 	/** The conversion factor from nano to base */
 	public static final double NANO_TO_BASE = 1.0e9;
@@ -50,9 +51,9 @@ public abstract class SimulationFrame {
 	public static String messageLabel2;
 	public static int messageLabel3;
 	public static int messageLabel4;
-
+	
 	/** The dynamics engine */
-	protected final World world;
+	protected final static World<SimulationBody> world = new World<SimulationBody>();
 
 	/** The pixels per meter scale factor */
 	protected final double scale;
@@ -65,7 +66,6 @@ public abstract class SimulationFrame {
 
 	public SimulationFrame(String name, double scale) throws IOException {
 		this.scale = scale; // set the scale
-		this.world = new World(); // create the world
 
 		menu.PanelsContainer.setVisible(false);
 
@@ -153,8 +153,7 @@ public abstract class SimulationFrame {
 		// by default, set (0, 0) to be the center of the screen with the positive x axis
 		// pointing right and the positive y axis pointing up
 		this.transform(g);
-
-		// reset the view
+		
 		this.clear(g);
 
         long time = System.nanoTime(); // get the current time
@@ -198,22 +197,18 @@ public abstract class SimulationFrame {
 	 * @param g the graphics object to render to
 	 * @throws IOException 
 	 */
-	protected void clear(Graphics2D g) throws IOException {
-		Graphics2D g2 = (Graphics2D) g;
+	protected void clear(Graphics2D g) {
+		g.drawImage(SimulationFrame.backgroundImg,  // image generee de la zone
+		0, 0,       // dx1, dy1 - x,y destination 1st corner
+		1280, 768,   // dx2, dy2 - x,y destination 2nd corner
+		BackgoundTheater.incr, 0, // sx1, sy1 - x,y source 1st corner
+		BackgoundTheater.incr+1280, 768, // sy1, sy2 - x,y source 2nd corner
+		SimplePlatformer.BleuCiel, // bgcolor
+		null);     // observer - object to get image modifications 
 
-		// lets draw over everything with background
-		g2.drawImage(backgroundImg,  // image generee de la zone
-				0, 0,       // dx1, dy1 - x,y destination 1st corner
-				1280, 768,   // dx2, dy2 - x,y destination 2nd corner
-				0, 0, // sx1, sy1 - x,y source 1st corner
-				1280+(createZoneBackgrounds.facteurZoom*5*128), // sx2
-				768+(createZoneBackgrounds.facteurZoom*5*128), // sy2 - x,y source 2nd corner
-				BleuCiel, // bgcolor
-				null);     // observer - object to get image modifications 
-		
-		g2.setFont(new Font("Arial",Font.BOLD,30));
-		g2.setColor(DrawMapZone.bleuArdoise);
-		g2.drawString(Notifications.messageNotification, 1000, 40);
+		g.setFont(new Font("Arial",Font.BOLD,30));
+		g.setColor(DrawMapZone.bleuArdoise);
+		g.drawString(Notifications.messageNotification, 1000, 40);
 	}
 	
 	public static void updateBackground() throws IOException {
@@ -233,9 +228,9 @@ public abstract class SimulationFrame {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		// draw all the objects in the world
-		for (int i = 0; i < this.world.getBodyCount(); i++) {
+		for (int i = 0; i < SimulationFrame.world.getBodyCount(); i++) {
 			// get the object
-			SimulationBody body = (SimulationBody) this.world.getBody(i);
+			SimulationBody body = (SimulationBody) SimulationFrame.world.getBody(i);
 			this.render(g, elapsedTime, body);
 		}
 	}
@@ -259,7 +254,7 @@ public abstract class SimulationFrame {
 	 */
 	// update the world with the elapsed time
 	protected void update(Graphics2D g, double elapsedTime) throws IOException {
-        this.world.update(elapsedTime);
+        SimulationFrame.world.update(elapsedTime);
 	}
 	
 	// Stops the simulation.
