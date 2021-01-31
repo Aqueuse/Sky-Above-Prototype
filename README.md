@@ -6,7 +6,7 @@ Sky Above is my homebrew Moutain sized Vertical Platformer generator. It doesn't
 
 ## The plot
 
-The earth is transforming into venus, you must save yourself by ascending into the high atmosphere and making the tools you need to breathe and protect from the cold. At the end, you stabilise in the top of the himalayas. But how many person have you saved ? During the journey to the top, you will meet other people, you can bring them some furtnitures, create paths to help them to climb or even building a airship for those who can't walk... or let's be crazy, building a all airship village and starting a new economy by traveling into the mines to take the crap of the old world and recreate a society in the cloud with a steampunk base. It's for you to see, as long as you get to the top, you have won.
+The earth is transforming into venus, you must save yourself by ascending into the high atmosphere and making the tools you need to breathe and protect from the cold. At the end, you stabilise in the top of the himalayas. But how many person have you saved ? During the journey to the top, you will meet other people. You can bring them some furtnitures, create paths to help them to climb or even building a airship for those who can't walk... or let's be crazy, building a all airship village and starting a new economy by traveling into the mines to take the crap of the old world and recreate a society in the cloud with a steampunk base. It's for you to see, as long as you get to the top, you have won.
 
 ## How it works ?
 
