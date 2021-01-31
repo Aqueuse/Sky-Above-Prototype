@@ -14,7 +14,7 @@ With a seed generator, Java, Swing, the dyn4j physics motor and a lot of texture
 
 ## Can I play with it ?
 
-- Playing ... playing for real, you mean ? I guess, it's a little playable for the moment. It still very buggy but it ****work**** basically.
+- Playing ... playing for real, you mean ? I guess, it's a little playable for the moment. It still very buggy but it """work""" basically.
 
 - Programming ? Yeah, with pleasure. Feel free to explore the code and to make pull requests.
 
