@@ -130,8 +130,8 @@ public class generateWorld {
 		arrayPlayer.close();
 
 		// on met à jour la sélection pour lancer le monde
-		LoadFile.selectedMap = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\map\\" + indexInt + ".csv";
-		LoadFile.selectedPlayer = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\player\\"+ indexInt + ".csv";
+		LoadFile.selectedMap = "usr/map/" + indexInt + ".csv";
+		LoadFile.selectedPlayer = "usr/player/"+ indexInt + ".csv";
 
 		// on dessine et on stocke la carte
 		DrawMapMonde.imageIoWrite(LoadFile.selectedMap);

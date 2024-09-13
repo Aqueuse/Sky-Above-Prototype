@@ -40,6 +40,7 @@ public class LoadFile  implements ActionListener {
     public static String[] nameWorlds = new String[listMap.length];
 
  	// récuperer les informations des players dans le dossier player
+	static File dossierUser = new File("usr/");
  	static File dossierPlayer = new File("usr/player");
 	public static String[] listPlayers = dossierPlayer.list();
  	String[] PlayersCreationTime = new String[listPlayers.length];
@@ -96,7 +97,7 @@ public class LoadFile  implements ActionListener {
 		// afficher le nom des mondes et la date de création
 		for (int i = 0; i<listMap.length; i++) {
 			try {
-				String cheminPlayer = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\player\\"+listPlayers[i];
+				String cheminPlayer = "usr/player/"+listPlayers[i];
 				// dummy Path ...
 				Path cheminPlayerPath = Paths.get(cheminPlayer);
 			    BufferedReader worldsParamFiles = Files.newBufferedReader(cheminPlayerPath, StandardCharsets.UTF_8);
@@ -141,8 +142,8 @@ public class LoadFile  implements ActionListener {
 		case "Charger" :
 			int selected = listFile.getSelectedIndex();
 			if (selected>=0) {
-				selectedMap = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\map\\"+listMap[selected];
-				selectedPlayer = "C:\\Users\\Megaport\\eclipse-workspace\\Sky above prototype\\usr\\player\\"+listMap[selected];
+				selectedMap = "usr/map/"+listMap[selected];
+				selectedPlayer = "usr/player/"+listMap[selected];
 				nameWorld = LoadFile.nameWorlds[selected];
 				try {
 					loadWorld(selectedMap, selectedPlayer);
